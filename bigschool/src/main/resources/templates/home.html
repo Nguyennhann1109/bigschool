@@ -1,29 +1,262 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org"
-      th:replace="layout :: content">
+<html>
 
-<div>
+<head>
+<meta charset="UTF-8">
+<title>Big School</title>
+
+<link rel="stylesheet"
+href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+
+<style>
+
+body{
+background:#f5f5f5;
+}
+
+.course{
+background:white;
+padding:15px;
+margin-top:10px;
+border-radius:6px;
+border:1px solid #ddd;
+display:flex;
+align-items:center;
+}
+
+.date{
+width:70px;
+height:70px;
+background:red;
+color:white;
+text-align:center;
+border-radius:8px;
+margin-right:15px;
+display:flex;
+flex-direction:column;
+justify-content:center;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<nav class="navbar navbar-dark bg-dark px-3">
+
+<a class="navbar-brand text-white" href="/">
+Home
+</a>
+
+<a class="navbar-brand text-white" href="/courses/create">
+Add Course
+</a>
+
+</nav>
+
+<div class="container mt-4">
 
 <h3>Upcoming Courses</h3>
 
-<div th:each="course : ${listCourse}" class="card mb-3">
+<div class="mb-3">
 
-<div class="card-body">
+<button onclick="loadCourses()" class="btn btn-primary btn-sm">
+Upcoming Courses
+</button>
 
-<h5 th:text="${course.lectureName}"></h5>
+<button onclick="loadMyCourses()" class="btn btn-success btn-sm">
+Course I am going
+</button>
 
-<p>
-<span th:text="${course.place}"></span>
-</p>
+<button onclick="loadFollowing()" class="btn btn-warning btn-sm">
+Lecture I am following
+</button>
 
-<p>
-<span th:text="${course.startDate}"></span>
-</p>
+</div>
+
+<div id="courseList"></div>
+
+</div>
+
+<footer class="text-center mt-4">
+Lập trình ứng dụng Java - Nguyễn Huy Cường - @2023
+</footer>
+
+<script>
+
+let user="khoa"
+
+
+async function loadCourses(){
+
+let res = await fetch("/api/courses")
+
+let data = await res.json()
+
+let html=""
+
+data.forEach(c=>{
+
+let d = new Date(c.dateTime)
+
+let day = d.getDate()
+
+let month = d.toLocaleString('en',{month:'short'}).toUpperCase()
+
+html+=`
+
+<div class="course">
+
+<div class="date">
+<b>${day}</b>
+<span>${month}</span>
+</div>
+
+<div>
+
+<h5>${c.lectureId}</h5>
+
+<p>${c.place}</p>
+
+<button class="btn btn-primary btn-sm"
+onclick="joinCourse(${c.id})">
+Join
+</button>
+
+<button class="btn btn-warning btn-sm"
+onclick="editCourse(${c.id})">
+Edit
+</button>
+
+<button class="btn btn-danger btn-sm"
+onclick="deleteCourse(${c.id})">
+Delete
+</button>
 
 </div>
 
 </div>
 
+`
+
+})
+
+document.getElementById("courseList").innerHTML = html
+
+}
+
+
+
+function joinCourse(id){
+
+fetch("/api/attendance/join?courseId="+id+"&user="+user,{
+method:"POST"
+})
+
+alert("Joined!")
+
+}
+
+
+
+async function deleteCourse(id){
+
+await fetch("/api/courses/"+id,{
+method:"DELETE"
+})
+
+alert("Deleted!")
+
+loadCourses()
+
+}
+
+
+
+function editCourse(id){
+
+location.href="/courses/edit/"+id
+
+}
+
+
+
+async function loadMyCourses(){
+
+let res = await fetch("/api/attendance/mycourse?user="+user)
+
+let data = await res.json()
+
+let html="<h4>Course I am going</h4>"
+
+data.forEach(a=>{
+
+let c=a.course
+
+let d = new Date(c.dateTime)
+
+let day = d.getDate()
+
+let month = d.toLocaleString('en',{month:'short'}).toUpperCase()
+
+html+=`
+
+<div class="course">
+
+<div class="date">
+<b>${day}</b>
+<span>${month}</span>
 </div>
 
+<div>
+<h5>${c.lectureId}</h5>
+<p>${c.place}</p>
+</div>
+
+</div>
+
+`
+
+})
+
+document.getElementById("courseList").innerHTML = html
+
+}
+
+
+
+async function loadFollowing(){
+
+let res = await fetch("/api/follow/myfollowing?user="+user)
+
+let data = await res.json()
+
+let html="<h4>Lecture I am following</h4>"
+
+data.forEach(f=>{
+
+html+=`
+
+<div class="course">
+
+<h5>${f.followee}</h5>
+
+</div>
+
+`
+
+})
+
+document.getElementById("courseList").innerHTML = html
+
+}
+
+
+
+loadCourses()
+
+</script>
+
+</body>
 </html>

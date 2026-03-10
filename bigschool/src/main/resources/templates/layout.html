@@ -2,31 +2,88 @@
 <html xmlns:th="http://www.thymeleaf.org">
 
 <head>
-    <meta charset="UTF-8">
-    <title>Big School</title>
+<meta charset="UTF-8">
+<title>Big School</title>
 
-    <link rel="stylesheet"
-          href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+<style>
+
+body{
+background:#f5f5f5;
+}
+
+.navbar{
+background:#1f2937;
+}
+
+.course-card{
+display:flex;
+align-items:center;
+background:white;
+padding:15px;
+margin-bottom:15px;
+border-radius:8px;
+box-shadow:0 2px 5px rgba(0,0,0,0.1);
+}
+
+.date-box{
+background:#e11d48;
+color:white;
+width:70px;
+height:70px;
+border-radius:10px;
+text-align:center;
+display:flex;
+flex-direction:column;
+justify-content:center;
+margin-right:15px;
+}
+
+.date-day{
+font-size:20px;
+font-weight:bold;
+}
+
+.date-month{
+font-size:12px;
+}
+
+.footer{
+text-align:center;
+margin-top:40px;
+padding:20px;
+color:#555;
+}
+
+</style>
+
 </head>
 
 <body>
 
-<nav class="navbar navbar-dark bg-dark px-3">
-    <a class="navbar-brand text-white" th:href="@{/}">Home</a>
-    <a class="navbar-brand text-white" th:href="@{/courses/create}">Add Course</a>
+<nav class="navbar navbar-dark px-3">
+
+<a class="navbar-brand text-white" th:href="@{/}">
+Home
+</a>
+
+<a class="navbar-brand text-white" th:href="@{/courses/create}">
+Add Course
+</a>
+
 </nav>
 
 <div class="container mt-4">
 
-    <!-- NỘI DUNG TRANG -->
-    <div th:fragment="content">
-    </div>
+<div th:insert="${content}">
+</div>
 
 </div>
 
-<footer class="text-center mt-4">
-    Lập trình ứng dụng Java - Nguyễn Huy Cường - @2023
-</footer>
+<div class="footer">
+Lập trình ứng dụng Java - Nguyễn Huy Cường - @2023
+</div>
 
 </body>
 </html>
