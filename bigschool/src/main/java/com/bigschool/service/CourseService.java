@@ -27,8 +27,8 @@ public class CourseService {
 
     // CREATE COURSE
     public Course createCourse(Course course){
-        return courseRepository.save(course);
-    }
+    return courseRepository.save(course);
+}
 
     // GET ALL COURSES
     public List<Course> getAllCourses(){
