@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="layout :: content"><head><meta charset="utf-8"></head><head></head><body><div>
+
+<h3>Add Course</h3>
+
+<form th:action="@{/courses/create}" method="post" th:object="${course}">
+
+<div class="mb-3">
+<label>Place</label>
+<input type="text" class="form-control" th:field="*{place}">
+</div>
+
+<div class="mb-3">
+<label>Start Date</label>
+<input type="date" class="form-control" th:field="*{startDate}">
+</div>
+
+<div class="mb-3">
+<label>Lecture Name</label>
+<input type="text" class="form-control" th:field="*{lectureName}">
+</div>
+
+<button class="btn btn-success">Add</button>
+
+</form>
+
+</div>
+
+</body></html>

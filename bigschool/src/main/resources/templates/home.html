@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="layout :: content">
+
+<div>
+
+<h3>Upcoming Courses</h3>
+
+<div th:each="course : ${listCourse}" class="card mb-3">
+
+<div class="card-body">
+
+<h5 th:text="${course.lectureName}"></h5>
+
+<p>
+<span th:text="${course.place}"></span>
+</p>
+
+<p>
+<span th:text="${course.startDate}"></span>
+</p>
+
+</div>
+
+</div>
+
+</div>
+
+</html>
