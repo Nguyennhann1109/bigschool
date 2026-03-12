@@ -7,6 +7,11 @@ import org.springframework.web.bind.annotation.GetMapping;
 public class ViewController {
 
     @GetMapping("/")
+    public String login() {
+        return "login";
+    }
+
+    @GetMapping("/home")
     public String home() {
         return "home";
     }
@@ -14,6 +19,11 @@ public class ViewController {
     @GetMapping("/courses/create")
     public String create() {
         return "create";
+    }
+
+    @GetMapping("/courses/edit/{id}")
+    public String edit() {
+        return "edit";
     }
 
 }

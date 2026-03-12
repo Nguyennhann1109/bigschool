@@ -1,40 +1,53 @@
 package com.bigschool.controller;
 
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-import java.util.*;
+
+import com.bigschool.entity.Course;
+import com.bigschool.repository.CourseRepository;
 
 @RestController
 @RequestMapping("/api/courses")
 public class CourseController {
 
-    List<Map<String,Object>> courses = new ArrayList<>();
-
-    public CourseController(){
-
-        Map<String,Object> c1 = new HashMap<>();
-        c1.put("id",1);
-        c1.put("place","Dong Nai");
-        c1.put("lectureId","Nguyen Huy Cuong");
-        c1.put("dateTime","2023-05-08T10:00");
-
-        Map<String,Object> c2 = new HashMap<>();
-        c2.put("id",2);
-        c2.put("place","HCM");
-        c2.put("lectureId","Tran Van A");
-        c2.put("dateTime","2023-06-10T09:00");
-
-        courses.add(c1);
-        courses.add(c2);
-    }
+    @Autowired
+    private CourseRepository courseRepository;
 
     @GetMapping
-    public List<Map<String,Object>> getCourses(){
-        return courses;
+    public List<Course> getAll(){
+        return courseRepository.findAll();
+    }
+
+    @GetMapping("/{id}")
+    public Course getById(@PathVariable Integer id){
+        return courseRepository.findById(id).orElse(null);
+    }
+
+    @PostMapping
+    public Course create(@RequestBody Course course){
+        return courseRepository.save(course);
+    }
+
+    @PutMapping("/{id}")
+    public Course update(@PathVariable Integer id,@RequestBody Course course){
+
+        Course c = courseRepository.findById(id).orElse(null);
+
+        if(c != null){
+            c.setPlace(course.getPlace());
+            c.setDateTime(course.getDateTime());
+            c.setLectureId(course.getLectureId());
+            return courseRepository.save(c);
+        }
+
+        return null;
     }
 
     @DeleteMapping("/{id}")
-    public void deleteCourse(@PathVariable int id){
-        courses.removeIf(c -> (int)c.get("id")==id);
+    public void delete(@PathVariable Integer id){
+        courseRepository.deleteById(id);
     }
 
 }
