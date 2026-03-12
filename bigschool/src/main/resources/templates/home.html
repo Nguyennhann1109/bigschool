@@ -37,6 +37,13 @@ flex-direction:column;
 justify-content:center;
 }
 
+.avatar{
+width:35px;
+height:35px;
+border-radius:50%;
+margin-right:5px;
+}
+
 </style>
 
 </head>
@@ -45,13 +52,64 @@ justify-content:center;
 
 <nav class="navbar navbar-dark bg-dark px-3">
 
-<a class="navbar-brand text-white" href="/">
+<a class="navbar-brand text-white" href="/home">
 Home
 </a>
 
 <a class="navbar-brand text-white" href="/courses/create">
 Add Course
 </a>
+
+<div class="d-flex ms-auto">
+
+<input id="username"
+placeholder="username"
+class="form-control me-2">
+
+<button onclick="login()" class="btn btn-success me-3">
+Login
+</button>
+
+<div class="dropdown" id="userMenu" style="display:none;">
+
+<button class="btn btn-dark dropdown-toggle"
+data-bs-toggle="dropdown">
+
+<img src="https://i.pravatar.cc/40"
+class="avatar">
+
+<span id="userDisplay"></span>
+
+</button>
+
+<ul class="dropdown-menu">
+
+<li>
+<a class="dropdown-item" href="#"
+onclick="loadMyCourses()">
+Course I am going
+</a>
+</li>
+
+<li>
+<a class="dropdown-item" href="#"
+onclick="loadFollowing()">
+Lecture I am following
+</a>
+</li>
+
+<li>
+<a class="dropdown-item" href="#"
+onclick="logout()">
+Logout
+</a>
+</li>
+
+</ul>
+
+</div>
+
+</div>
 
 </nav>
 
@@ -65,12 +123,17 @@ Add Course
 Upcoming Courses
 </button>
 
-<button onclick="loadMyCourses()" class="btn btn-success btn-sm">
-Course I am going
-</button>
+</div>
 
-<button onclick="loadFollowing()" class="btn btn-warning btn-sm">
-Lecture I am following
+<div class="mb-3">
+
+<input id="search"
+placeholder="Search lecture or place"
+class="form-control">
+
+<button onclick="searchCourse()"
+class="btn btn-info btn-sm mt-2">
+Search
 </button>
 
 </div>
@@ -80,29 +143,83 @@ Lecture I am following
 </div>
 
 <footer class="text-center mt-4">
-Lập trình ứng dụng Java - Nguyễn Huy Cường - @2023
+BigSchool Demo
 </footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
 <script>
 
-let user="khoa"
+let user = localStorage.getItem("user") || "guest"
+
+
+
+if(user !== "guest"){
+
+document.getElementById("userDisplay").innerText = user
+
+document.getElementById("userMenu").style.display="block"
+
+}
+
+
+
+function login(){
+
+let u=document.getElementById("username").value
+
+if(u===""){
+alert("Enter username")
+return
+}
+
+user=u
+
+localStorage.setItem("user",user)
+
+document.getElementById("userDisplay").innerText=user
+
+document.getElementById("userMenu").style.display="block"
+
+alert("Login success: "+user)
+
+}
+
+
+
+function logout(){
+
+localStorage.removeItem("user")
+
+location.href="/"
+
+}
+
 
 
 async function loadCourses(){
 
-let res = await fetch("/api/courses")
+let res=await fetch("/api/courses")
 
-let data = await res.json()
+let data=await res.json()
+
+renderCourses(data)
+
+}
+
+
+
+function renderCourses(data){
 
 let html=""
 
 data.forEach(c=>{
 
-let d = new Date(c.dateTime)
+let d=new Date(c.dateTime)
 
-let day = d.getDate()
+let day=d.getDate()
 
-let month = d.toLocaleString('en',{month:'short'}).toUpperCase()
+let month=d.toLocaleString('en',{month:'short'}).toUpperCase()
 
 html+=`
 
@@ -121,7 +238,7 @@ html+=`
 
 <button class="btn btn-primary btn-sm"
 onclick="joinCourse(${c.id})">
-Join
+Going?
 </button>
 
 <button class="btn btn-warning btn-sm"
@@ -142,15 +259,20 @@ Delete
 
 })
 
-document.getElementById("courseList").innerHTML = html
+document.getElementById("courseList").innerHTML=html
 
 }
 
 
 
-function joinCourse(id){
+async function joinCourse(id){
 
-fetch("/api/attendance/join?courseId="+id+"&user="+user,{
+if(user==="guest"){
+alert("Please login first")
+return
+}
+
+await fetch("/api/attendance/join?courseId="+id+"&user="+user,{
 method:"POST"
 })
 
@@ -184,43 +306,11 @@ location.href="/courses/edit/"+id
 
 async function loadMyCourses(){
 
-let res = await fetch("/api/attendance/mycourse?user="+user)
+let res=await fetch("/api/attendance/mycourse?user="+user)
 
-let data = await res.json()
+let data=await res.json()
 
-let html="<h4>Course I am going</h4>"
-
-data.forEach(a=>{
-
-let c=a.course
-
-let d = new Date(c.dateTime)
-
-let day = d.getDate()
-
-let month = d.toLocaleString('en',{month:'short'}).toUpperCase()
-
-html+=`
-
-<div class="course">
-
-<div class="date">
-<b>${day}</b>
-<span>${month}</span>
-</div>
-
-<div>
-<h5>${c.lectureId}</h5>
-<p>${c.place}</p>
-</div>
-
-</div>
-
-`
-
-})
-
-document.getElementById("courseList").innerHTML = html
+renderCourses(data)
 
 }
 
@@ -228,27 +318,33 @@ document.getElementById("courseList").innerHTML = html
 
 async function loadFollowing(){
 
-let res = await fetch("/api/follow/myfollowing?user="+user)
+let res=await fetch("/api/follow/myfollowing?user="+user)
 
-let data = await res.json()
+let data=await res.json()
 
-let html="<h4>Lecture I am following</h4>"
+renderCourses(data)
 
-data.forEach(f=>{
+}
 
-html+=`
 
-<div class="course">
 
-<h5>${f.followee}</h5>
+async function searchCourse(){
 
-</div>
+let keyword=document.getElementById("search").value.toLowerCase()
 
-`
+let res=await fetch("/api/courses")
 
-})
+let data=await res.json()
 
-document.getElementById("courseList").innerHTML = html
+let filter=data.filter(c=>
+
+c.place.toLowerCase().includes(keyword) ||
+
+c.lectureId.toLowerCase().includes(keyword)
+
+)
+
+renderCourses(filter)
 
 }
 

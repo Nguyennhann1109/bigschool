@@ -1,12 +1,6 @@
 package com.bigschool.entity;
 
-import java.time.LocalDateTime;
-
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.Data;
 
 @Data
@@ -20,7 +14,8 @@ public class Course {
 
     private String place;
 
-    private LocalDateTime dateTime;
+    private String dateTime;
 
-    private String lectureId; // userName của giảng viên
+    private String lectureId;
+
 }

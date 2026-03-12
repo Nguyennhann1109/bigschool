@@ -33,9 +33,7 @@ class="form-control">
 </div>
 
 <button onclick="updateCourse()" class="btn btn-success">
-
 Update
-
 </button>
 
 </div>
@@ -44,14 +42,26 @@ Update
 
 let id = window.location.pathname.split("/").pop()
 
+loadCourse()
+
+async function loadCourse(){
+
+let res = await fetch("/api/courses/"+id)
+
+let c = await res.json()
+
+document.getElementById("place").value = c.place
+document.getElementById("dateTime").value = c.dateTime
+document.getElementById("lectureId").value = c.lectureId
+
+}
+
 async function updateCourse(){
 
 let course={
 
 place:document.getElementById("place").value,
-
 dateTime:document.getElementById("dateTime").value,
-
 lectureId:document.getElementById("lectureId").value
 
 }
